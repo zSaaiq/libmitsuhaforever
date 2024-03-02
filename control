@@ -1,0 +1,10 @@
+Package: com.ryannair05.libmitsuhaforever
+Name: libmitsuhaforever
+Version: 2.0
+Architecture: iphoneos-arm
+Description: An advanced audio visualizer library for Mitsuha Forever
+Maintainer: Ryan Nair
+Author: Ryan Nair, ConorTheDev, Nepeta
+Section: Development
+Depends: mobilesubstrate, com.ryannair05.audiosnapshotserver
+Replaces: me.nepeta.libmitsuha, me.conorthedev.libmitsuhaforever
