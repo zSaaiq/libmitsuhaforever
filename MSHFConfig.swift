@@ -37,7 +37,7 @@ private extension UIColor {
         return nil
     }
 }
-        
+
 private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UIColor {
     if let result = UIColor.hbcp_propertyList(value:hexString) {
         return result
@@ -76,14 +76,14 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
     private var lineThickness: CGFloat = 0.0
     @objc private var ignoreColorFlow = false
     @objc private var view: MSHFView?
-    
+
     init(dictionary dict: Dictionary<String, Any>) {
         super.init()
         setDictionary(dict)
-   
+
         // let MSHFPreferencesChanged =  "com.ryannair05.mitsuhaforever/ReloadPrefs"
     }
-    
+
     @objc public func initializeView(withFrame frame: CGRect) {
         var superview: UIView?
         var index: Int?
@@ -175,7 +175,7 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         guard let view = view else {
             return
         }
-        
+
         if colorMode == 1 {
             let color = UIColor(red: 1.0,
                  green: 0.0,
@@ -189,11 +189,11 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
                  green: 0.0,
                  blue: 1.0,
                  alpha: dynamicColorAlpha)
-             
+
             view.updateWave(color,
                  subwaveColor: scolor,
                  subSubwaveColor: sscolor)
-            
+
         }
         else if let image = image, colorMode == 0 {
             let color = getAverageColor(from: image, withAlpha: dynamicColorAlpha)
@@ -218,7 +218,7 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         disableBatterySaver = dict["disableBatterySaver"] as? Bool ?? false
         enableFFT = dict["enableFFT"] as? Bool ?? false
         enableAutoHide = dict["enableAutoHide"] as? Bool ?? true
-        
+
         if let value = dict["waveColor"] as? UIColor {
             waveColor = value
         }
@@ -228,7 +228,7 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         else {
             waveColor = UIColor.black.withAlphaComponent(0.5)
         }
-        
+
         if let value = dict["subwaveColor"] as? UIColor {
             subwaveColor = value
         }
@@ -238,7 +238,7 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         else {
             subwaveColor = UIColor.black.withAlphaComponent(0.5)
         }
-        
+
         if let value = dict["subSubwaveColor"] as? UIColor {
             subwaveColor = value
         }
@@ -248,7 +248,7 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         else {
             subwaveColor = UIColor.black.withAlphaComponent(0.5)
         }
-        
+
       gain = dict["gain"] as? Double ?? 50
       limiter = dict["limiter"] as? Double ?? 0
       numberOfPoints = dict["numberOfPoints"] as? Int ?? 8
