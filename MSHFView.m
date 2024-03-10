@@ -91,7 +91,7 @@ BOOL boost;
 }
 
 - (void)configureDisplayLink {
-    
+
   self.displayLink = [CADisplayLink displayLinkWithTarget:self
                                                  selector:@selector(redraw)];
 

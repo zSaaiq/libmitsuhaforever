@@ -23,9 +23,10 @@ private extension UIColor {
                     alpha: CGFloat((hex & 0x000000FF) >> 0) / 255)
             } else {
                 var alpha: Float = 1
-                if scanner.scanString(":", into: nil) {
-					scanner.scanFloat(&alpha)
+                if scanner.scanString(":") != nil {
+                alpha = scanner.scanFloat() ?? 1.0
                 }
+
 
                 return self.init(
                     red: CGFloat((hex & 0xFF0000) >> 16) / 255,
@@ -55,7 +56,6 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
     @objc private var style = 0
     @objc private var colorMode = 0
     private var enableAutoUIColor = false
-    @objc private var enableCoverArtBugFix = false
     private var disableBatterySaver = false
     private var enableFFT = false
     private var enableAutoHide = false
@@ -135,19 +135,20 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         view!.sensitivity = sensitivity
         view!.audioProcessing?.fft = enableFFT
         view!.disableBatterySaver = disableBatterySaver
-        view!.siriEnabled = colorMode == 1
+        view!.siriEnabled = colorMode == 1 || colorMode == 2
 
         if let waveColor = waveColor {
-            if colorMode == 2 {
+            if colorMode == 3 {
                 view!.updateWave(waveColor, subwaveColor: waveColor)
-            } else if let subwaveColor = subwaveColor, let subSubwaveColor = subSubwaveColor, colorMode == 1 {
+            } else if let calculatedColor = calculatedColor, let subwaveColor = subwaveColor, let subSubwaveColor = subSubwaveColor, colorMode == 1 {
+                view!.updateWave(calculatedColor,
+                    subwaveColor: subwaveColor,
+                    subSubwaveColor: subSubwaveColor)
+            } else if let subwaveColor = subwaveColor, let subSubwaveColor = subSubwaveColor, colorMode == 2 {
                 view!.updateWave(waveColor,
                     subwaveColor: subwaveColor,
                     subSubwaveColor: subSubwaveColor)
             }
-        }
-        else if let calculatedColor = calculatedColor {
-            view!.updateWave(calculatedColor, subwaveColor: calculatedColor)
         }
     }
 
@@ -176,11 +177,9 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
             return
         }
 
-        if colorMode == 1 {
-            let color = UIColor(red: 1.0,
-                 green: 0.0,
-                 blue: 0.0,
-                 alpha: dynamicColorAlpha)
+        if let image = image, colorMode == 1 {
+            let color = getAverageColor(from: image, withAlpha: dynamicColorAlpha)
+            calculatedColor = color
             let scolor = UIColor(red: 0.0,
                  green: 1.0,
                  blue: 0.0,
@@ -189,7 +188,6 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
                  green: 0.0,
                  blue: 1.0,
                  alpha: dynamicColorAlpha)
-
             view.updateWave(color,
                  subwaveColor: scolor,
                  subSubwaveColor: sscolor)
@@ -200,9 +198,19 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
             calculatedColor = color
             view.updateWave(color, subwaveColor: color)
         }
-        else {
+        else if colorMode == 2{
             let color = waveColor!
-            view.updateWave(color, subwaveColor: color)
+            let scolor = UIColor(red: 0.0,
+                 green: 1.0,
+                 blue: 0.0,
+                 alpha: dynamicColorAlpha)
+            let sscolor = UIColor(red: 0.0,
+                 green: 0.0,
+                 blue: 1.0,
+                 alpha: dynamicColorAlpha)
+            view.updateWave(color,
+                 subwaveColor: scolor,
+                 subSubwaveColor: sscolor)
         }
     }
 
@@ -214,7 +222,6 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         colorMode = dict["colorMode"] as? Int ?? 0
         enableAutoUIColor = dict["enableAutoUIColor"] as? Bool ?? true
         ignoreColorFlow = dict["ignoreColorFlow"] as? Bool ?? false
-        enableCoverArtBugFix = dict["enableCoverArtBugFix"] as? Bool ?? false
         disableBatterySaver = dict["disableBatterySaver"] as? Bool ?? false
         enableFFT = dict["enableFFT"] as? Bool ?? false
         enableAutoHide = dict["enableAutoHide"] as? Bool ?? true
