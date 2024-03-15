@@ -35,7 +35,7 @@ BOOL boost;
 
     self.audioProcessing = [[MSHFAudioProcessing alloc] initWithBufferSize:1024];
     self.audioProcessing.delegate = self;
-    self.audioProcessing.fft = true;
+    self.audioProcessing.fft = false;
 
     [self initializeWaveLayers];
 
@@ -78,7 +78,7 @@ BOOL boost;
 
 - (void)start {
   NSString *identifier = [[NSProcessInfo processInfo] processName];
-  if ([identifier isEqualToString:@"Music"] || [identifier isEqualToString:@"Spotify"] || [[NSClassFromString(@"SBMediaController") sharedInstance] isPlaying]) {
+  if ([identifier isEqualToString:@"Spotify"] || [identifier isEqualToString:@"YouTubeMusic"] || [[NSClassFromString(@"SBMediaController") sharedInstance] isPlaying]) {
 	    [self.audioSource start];
       [self.displayLink setPaused:false];
   }
@@ -155,8 +155,7 @@ BOOL boost;
     cachedLength = self.numberOfPoints;
   }
 
-
-  if ([[[NSClassFromString(@"BluetoothManager") sharedInstance] connectedDevices] count] && boost) {
+if ([[[NSClassFromString(@"BluetoothManager") sharedInstance] connectedDevices] count] && boost) {
 
     for (int i = 0; i < self.numberOfPoints; i++) {
         self.points[i].x = i * pixelFixer;
@@ -180,24 +179,24 @@ BOOL boost;
         }
         self.points[i].y += self.waveOffset;
       }
-  } else {
-
-    for (int i = 0; i < self.numberOfPoints; i++) {
-      self.points[i].x = i * pixelFixer;
-      double pureValue = data[i * compressionRate] * self.gain;
-
-      if (self.limiter != 0) {
-        pureValue = (fabs(pureValue) < self.limiter
-                        ? pureValue
-                        : (pureValue < 0 ? -1 * self.limiter : self.limiter));
-      }
-
-      self.points[i].y = (pureValue * self.sensitivity) + self.waveOffset;
-
-      if (isnan(self.points[i].y))
-        self.points[i].y = self.waveOffset;
     }
-  }
+    else{
+      for (int i = 0; i < self.numberOfPoints; i++) {
+        self.points[i].x = i * pixelFixer;
+        double pureValue = data[i * compressionRate] * self.gain;
+
+        if (self.limiter != 0) {
+          pureValue = (fabs(pureValue) < self.limiter
+                          ? pureValue
+                          : (pureValue < 0 ? -1 * self.limiter : self.limiter));
+        }
+
+        self.points[i].y = (pureValue * self.sensitivity) + self.waveOffset;
+
+        if (isnan(self.points[i].y))
+          self.points[i].y = self.waveOffset;
+      }
+    }
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {

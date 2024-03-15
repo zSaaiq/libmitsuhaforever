@@ -278,20 +278,17 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
 
         let MSHFPrefsFile = "/var/mobile/Library/Preferences/com.ryannair05.mitsuhaforever.plist"
 
-        if let file = NSDictionary(contentsOfFile: MSHFPrefsFile) as Dictionary? {
-            for key in file.keys {
+        if let file = NSDictionary(contentsOfFile: MSHFPrefsFile) {
+            for (key, value) in file {
                 guard let key = key as? String else {
                     continue
                 }
-                prefs[key] = file[key as NSObject]
+
+                let removedKey = key.replacingOccurrences(of: "MSHF\(name)", with: "")
+                let lowerCaseKey = "\(removedKey.prefix(1).lowercased())\(removedKey.dropFirst(1))"
+
+                prefs[lowerCaseKey] = value
             }
-        }
-
-        for key in prefs.keys {
-            let removedKey = key.replacingOccurrences(of: "MSHF\(name)", with: "")
-            let lowerCaseKey = "\(removedKey.prefix(1).lowercased())\(removedKey.dropFirst(1))"
-
-            prefs[lowerCaseKey] = prefs[key]
         }
 
         prefs["subwaveColor"] = prefs["waveColor"]

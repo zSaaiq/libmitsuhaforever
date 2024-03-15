@@ -29,7 +29,7 @@
     free(outReal);
     free(outImaginary);
     free(window);
-    
+
     vDSP_destroy_fftsetup(fftSetup);
 }
 
