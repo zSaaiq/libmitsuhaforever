@@ -138,8 +138,10 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         view!.siriEnabled = colorMode == 1 || colorMode == 2
 
         if let waveColor = waveColor {
-            if colorMode == 3 {
-                view!.updateWave(waveColor, subwaveColor: waveColor)
+            if let calculatedColor = calculatedColor, let subwaveColor = subwaveColor, let subSubwaveColor = subSubwaveColor, colorMode == 0 {
+                view!.updateWave(calculatedColor,
+                    subwaveColor: subwaveColor,
+                    subSubwaveColor: subSubwaveColor)
             } else if let calculatedColor = calculatedColor, let subwaveColor = subwaveColor, let subSubwaveColor = subSubwaveColor, colorMode == 1 {
                 view!.updateWave(calculatedColor,
                     subwaveColor: subwaveColor,
@@ -148,6 +150,8 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
                 view!.updateWave(waveColor,
                     subwaveColor: subwaveColor,
                     subSubwaveColor: subSubwaveColor)
+            }else if colorMode == 3 {
+                view!.updateWave(waveColor, subwaveColor: waveColor)
             }
         }
     }
@@ -176,8 +180,11 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         guard let view = view else {
             return
         }
-
-        if let image = image, colorMode == 1 {
+        if let image = image, colorMode == 0 {
+        let color = getAverageColor(from: image, withAlpha: dynamicColorAlpha)
+        calculatedColor = color
+        view.updateWave(color, subwaveColor: color)
+        } else if let image = image, colorMode == 1 {
             let color = getAverageColor(from: image, withAlpha: dynamicColorAlpha)
             calculatedColor = color
             let scolor = UIColor(red: 0.0,
@@ -192,13 +199,7 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
                  subwaveColor: scolor,
                  subSubwaveColor: sscolor)
 
-        }
-        else if let image = image, colorMode == 0 {
-            let color = getAverageColor(from: image, withAlpha: dynamicColorAlpha)
-            calculatedColor = color
-            view.updateWave(color, subwaveColor: color)
-        }
-        else if colorMode == 2{
+        } else if colorMode == 2{
             let color = waveColor!
             let scolor = UIColor(red: 0.0,
                  green: 1.0,
@@ -211,6 +212,10 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
             view.updateWave(color,
                  subwaveColor: scolor,
                  subSubwaveColor: sscolor)
+        } else if colorMode == 3{
+            let color = waveColor!
+            view.updateWave(color,
+                 subwaveColor: color)
         }
     }
 
@@ -255,7 +260,6 @@ private func LCPParseColorString(_ hexString: String?, _ fallback: String) -> UI
         else {
             subwaveColor = UIColor.black.withAlphaComponent(0.5)
         }
-
       gain = dict["gain"] as? Double ?? 50
       limiter = dict["limiter"] as? Double ?? 0
       numberOfPoints = dict["numberOfPoints"] as? Int ?? 8

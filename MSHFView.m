@@ -1,8 +1,7 @@
+
 #import "public/MSHFView.h"
 
 @implementation MSHFView
-
-BOOL boost;
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [self initWithFrame:frame
@@ -41,9 +40,6 @@ BOOL boost;
 
     cachedLength = self.numberOfPoints;
     self.points = (CGPoint *)malloc(sizeof(CGPoint) * self.numberOfPoints);
-
-    NSDictionary *prefs = [[NSDictionary alloc] initWithContentsOfFile:MSHFPrefsFile];
-    boost = ([prefs objectForKey:@"MSHFAirpodsSensBoost"] ? [[prefs objectForKey:@"MSHFAirpodsSensBoost"] boolValue] : NO);
   }
 
   return self;
@@ -154,36 +150,9 @@ BOOL boost;
     self.points = (CGPoint *)malloc(sizeof(CGPoint) * self.numberOfPoints);
     cachedLength = self.numberOfPoints;
   }
-
-if ([[[NSClassFromString(@"BluetoothManager") sharedInstance] connectedDevices] count] && boost) {
-
-    for (int i = 0; i < self.numberOfPoints; i++) {
-        self.points[i].x = i * pixelFixer;
-        double pureValue = data[i * compressionRate] * self.gain;
-
-        if (!pureValue) {
-          self.points[i].y = self.waveOffset;
-          continue;
-        }
-
-        if (self.limiter != 0) {
-          pureValue = (fabs(pureValue) < self.limiter
-                          ? pureValue
-                          : (pureValue < 0 ? -1 * self.limiter : self.limiter));
-        }
-
-        self.points[i].y = (pureValue * self.sensitivity);
-
-        while (fabs(self.points[i].y) < 1.5) {
-            self.points[i].y *= 25;
-        }
-        self.points[i].y += self.waveOffset;
-      }
-    }
-    else{
-      for (int i = 0; i < self.numberOfPoints; i++) {
-        self.points[i].x = i * pixelFixer;
-        double pureValue = data[i * compressionRate] * self.gain;
+for (int i = 0; i < self.numberOfPoints; i++) {
+  self.points[i].x = i * pixelFixer;
+  double pureValue = data[i * compressionRate] * self.gain;
 
         if (self.limiter != 0) {
           pureValue = (fabs(pureValue) < self.limiter
@@ -196,7 +165,7 @@ if ([[[NSClassFromString(@"BluetoothManager") sharedInstance] connectedDevices] 
         if (isnan(self.points[i].y))
           self.points[i].y = self.waveOffset;
       }
-    }
+
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {

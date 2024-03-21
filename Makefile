@@ -1,6 +1,6 @@
 THEOS_DEVICE_IP = 192.168.178.116
 FINALPACKAGE = 1
-# PREFIX = $(THEOS)/toolchain/Xcode.xctoolchain/usr/bin/
+PREFIX = $(THEOS)/toolchain/Xcode.xctoolchain/usr/bin/
 THEOS_PACKAGE_SCHEME=rootless
 export ADDITIONAL_CFLAGS = -DTHEOS_LEAN_AND_MEAN -fobjc-arc -O3
 export TARGET = iphone:15.6

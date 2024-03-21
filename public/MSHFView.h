@@ -61,12 +61,7 @@
 
 @end
 
-@interface BluetoothManager
-+ (id)sharedInstance;
-- (id)connectedDevices;
-@end
-
 @interface SBMediaController
 + (id)sharedInstance;
-- (BOOL)isPlaying; 
+- (BOOL)isPlaying;
 @end
